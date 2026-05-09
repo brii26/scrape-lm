@@ -8,10 +8,13 @@ import (
 )
 
 type Config struct {
-	Port      string
-	RedisAddr string
-	JWTSecret string
-	AppEnv    string
+	Port               string
+	RedisAddr          string
+	JWTSecret          string
+	AppEnv             string
+	GoogleClientID     string
+	GoogleClientSecret string
+	AllowedOrigin      string
 }
 
 func Load() *Config {
@@ -20,10 +23,13 @@ func Load() *Config {
 	}
 
 	cfg := &Config{
-		Port:      getEnv("PORT", "8080"),
-		RedisAddr: getEnv("REDIS_ADDR", "localhost:6379"),
-		JWTSecret: getEnv("JWT_SECRET", ""),
-		AppEnv:    getEnv("APP_ENV", "development"),
+		Port:               getEnv("PORT", "8080"),
+		RedisAddr:          getEnv("REDIS_ADDR", "localhost:6379"),
+		JWTSecret:          getEnv("JWT_SECRET", ""),
+		AppEnv:             getEnv("APP_ENV", "development"),
+		GoogleClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
+		GoogleClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
+		AllowedOrigin:      getEnv("ALLOWED_ORIGIN", "http://localhost:3000"),
 	}
 
 	if cfg.JWTSecret == "" {
