@@ -1,0 +1,44 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: scrape-lm-redis
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --aof-use-rdb-preamble yes
+      --auto-aof-rewrite-percentage 100
+      --auto-aof-rewrite-min-size 10mb
+      --save 60 1
+    volumes:
+      - redis_data:/data
+    networks:
+      - scrape-lm-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scrape-lm-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - scrape-lm-net
+
+volumes:
+  redis_data:
+
+networks:
+  scrape-lm-net:
+    driver: bridge
