@@ -10,6 +10,7 @@ import (
 	"backend/internal/cache"
 	"backend/internal/scraper"
 	"backend/pkg/hash"
+	"backend/pkg/types"
 )
 
 const cacheTTL = 30 * time.Minute
@@ -22,12 +23,12 @@ func NewService(cache *cache.RedisClient) *Service {
 	return &Service{cache: cache}
 }
 
-func (s *Service) GetNews(query ScrapeQuery) ([]NewsItem, error) {
+func (s *Service) GetNews(query types.ScrapeQuery) ([]types.NewsItem, error) {
 	cacheKey := hash.CacheKey(query.Topic, query.Regions)
 
 	cached, err := s.cache.Get(cacheKey)
 	if err == nil {
-		var items []NewsItem
+		var items []types.NewsItem
 		if jsonErr := json.Unmarshal([]byte(cached), &items); jsonErr == nil {
 			log.Printf("cache hit: %s", cacheKey)
 			return items, nil

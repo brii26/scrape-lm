@@ -8,15 +8,15 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/mmcdole/gofeed"
 
-	"backend/internal/news"
+	"backend/pkg/types"
 )
 
 const maxResults = 30
 
-func Scrape(query news.ScrapeQuery) []news.NewsItem {
+func Scrape(query types.ScrapeQuery) []types.NewsItem {
 	var (
 		mu      sync.Mutex
-		results []news.NewsItem
+		results []types.NewsItem
 	)
 
 	var wg sync.WaitGroup
@@ -55,7 +55,7 @@ func Scrape(query news.ScrapeQuery) []news.NewsItem {
 	return results
 }
 
-func scrapeRSS(site SiteConfig) []news.NewsItem {
+func scrapeRSS(site SiteConfig) []types.NewsItem {
 	if site.RSSFallback == "" {
 		return nil
 	}
@@ -67,19 +67,19 @@ func scrapeRSS(site SiteConfig) []news.NewsItem {
 		return nil
 	}
 
-	var items []news.NewsItem
+	var items []types.NewsItem
 	for _, item := range feed.Items {
 		items = append(items, parseRSSItem(item, site.Region, site.Name))
 	}
 	return items
 }
 
-func scrapeHTML(site SiteConfig) []news.NewsItem {
+func scrapeHTML(site SiteConfig) []types.NewsItem {
 	if site.TitleSel == "" {
 		return nil
 	}
 
-	var items []news.NewsItem
+	var items []types.NewsItem
 	c := colly.NewCollector()
 
 	if err := applyLimiter(c); err != nil {
@@ -99,8 +99,8 @@ func scrapeHTML(site SiteConfig) []news.NewsItem {
 	return items
 }
 
-func applyFilters(items []news.NewsItem, filters news.Filters) []news.NewsItem {
-	var result []news.NewsItem
+func applyFilters(items []types.NewsItem, filters types.Filters) []types.NewsItem {
+	var result []types.NewsItem
 
 	for _, item := range items {
 		text := strings.ToLower(item.Title + " " + item.Summary)

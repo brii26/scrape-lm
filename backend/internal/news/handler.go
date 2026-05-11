@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"backend/pkg/response"
+	"backend/pkg/types"
 )
 
 type Handler struct {
@@ -17,7 +18,7 @@ func NewHandler(service *Service) *Handler {
 }
 
 func (h *Handler) Scrape(c *gin.Context) {
-	var query ScrapeQuery
+	var query types.ScrapeQuery
 	if err := c.ShouldBindJSON(&query); err != nil {
 		response.Error(c, http.StatusBadRequest, "invalid request body")
 		return
