@@ -2,7 +2,21 @@ import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import { API_BASE_URL } from "@/lib/constants"
 
+declare module "next-auth" {
+  interface Session {
+    backendJwt?: string
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    backendJwt?: string
+    idToken?: string
+  }
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -11,7 +25,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, account }) {
-      // on first sign-in, exchange Google id_token for our backend JWT
       if (account?.id_token) {
         const res = await fetch(`${API_BASE_URL}/auth/google/callback`, {
           method: "POST",
@@ -29,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      session.backendJwt = token.backendJwt as string
+      session.backendJwt = token.backendJwt
       return session
     },
     async redirect({ url, baseUrl }) {
