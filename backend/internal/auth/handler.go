@@ -5,62 +5,41 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
-	googleapi "google.golang.org/api/oauth2/v2"
-	"google.golang.org/api/option"
+	"google.golang.org/api/idtoken"
 
 	"backend/pkg/response"
 )
 
 type Handler struct {
-	service     *Service
-	oauthConfig *oauth2.Config
+	service         *Service
+	googleClientID  string
 }
 
-func NewHandler(service *Service, clientID, clientSecret, redirectURL string) *Handler {
-	cfg := &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		RedirectURL:  redirectURL,
-		Scopes:       []string{"openid", "email", "profile"},
-		Endpoint:     google.Endpoint,
-	}
-	return &Handler{service: service, oauthConfig: cfg}
+func NewHandler(service *Service, clientID, _, _ string) *Handler {
+	return &Handler{service: service, googleClientID: clientID}
 }
 
-func (h *Handler) GoogleLogin(c *gin.Context) {
-	url := h.oauthConfig.AuthCodeURL("state", oauth2.AccessTypeOnline)
-	c.Redirect(http.StatusTemporaryRedirect, url)
+type callbackRequest struct {
+	IDToken string `json:"id_token" binding:"required"`
 }
 
 func (h *Handler) GoogleCallback(c *gin.Context) {
-	code := c.Query("code")
-	if code == "" {
-		response.Error(c, http.StatusBadRequest, "missing code")
+	var req callbackRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "id_token required")
 		return
 	}
 
-	tok, err := h.oauthConfig.Exchange(context.Background(), code)
+	payload, err := idtoken.Validate(context.Background(), req.IDToken, h.googleClientID)
 	if err != nil {
-		response.Error(c, http.StatusUnauthorized, "failed to exchange code")
+		response.Error(c, http.StatusUnauthorized, "invalid id_token")
 		return
 	}
 
-	httpClient := h.oauthConfig.Client(context.Background(), tok)
-	svc, err := googleapi.NewService(context.Background(), option.WithHTTPClient(httpClient))
-	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "failed to create google client")
-		return
-	}
+	sub := payload.Subject
+	email, _ := payload.Claims["email"].(string)
 
-	info, err := svc.Userinfo.Get().Do()
-	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "failed to get user info")
-		return
-	}
-
-	jwt, err := h.service.CreateSession(info.Id, info.Email)
+	jwt, err := h.service.CreateSession(sub, email)
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, "failed to create session")
 		return
