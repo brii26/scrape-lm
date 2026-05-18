@@ -18,5 +18,5 @@ export async function GET() {
     path: "/",
   })
 
-  return NextResponse.redirect(new URL("/", process.env.NEXTAUTH_URL!))
+  return NextResponse.redirect(new URL("/", process.env.NEXTAUTH_URL!), { status: 303 })
 }
