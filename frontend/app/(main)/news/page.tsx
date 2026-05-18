@@ -34,8 +34,8 @@ export default async function NewsPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-gray-500">
-        {items.length} results for <span className="font-medium text-gray-800">{query.topic}</span>
+      <p className="text-sm text-slate-500">
+        {items.length} results for <span className="font-medium text-slate-200">{query.topic}</span>
       </p>
       {items.length === 0 ? (
         <EmptyState />

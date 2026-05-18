@@ -16,8 +16,8 @@ export default function Pagination({ page, onPageChange }: Props) {
           onClick={() => onPageChange(p)}
           className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
             p === page
-              ? "bg-blue-600 text-white"
-              : "bg-white border border-gray-200 text-gray-600 hover:border-blue-400"
+              ? "bg-cyan-500 text-white"
+              : "bg-white/5 border border-white/10 text-slate-400 hover:border-cyan-500/50 hover:text-cyan-400"
           }`}
         >
           {p}

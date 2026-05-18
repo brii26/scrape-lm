@@ -30,26 +30,38 @@ export default function PromptSection() {
   }
 
   return (
-    <div className="w-full max-w-xl flex flex-col gap-4">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <div className="flex gap-2">
+    <div className="w-full max-w-2xl flex flex-col gap-4">
+      <form onSubmit={handleSubmit}>
+        <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-[#161b2e] border border-white/10 focus-within:border-cyan-500/50 transition-colors">
+          <svg className="w-5 h-5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g. latest oil news from US and UK"
-            className="flex-1 px-4 py-3 rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-400"
+            placeholder="find me news about..."
+            className="flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 outline-none"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="px-5 py-3 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
           >
-            {loading ? "Searching..." : "Search"}
+            {loading ? (
+              <svg className="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            )}
           </button>
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-xs text-red-400 mt-2 px-1">{error}</p>}
       </form>
       <PromptSuggestions onSelect={setInput} />
     </div>
