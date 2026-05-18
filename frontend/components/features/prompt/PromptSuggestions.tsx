@@ -18,7 +18,7 @@ export default function PromptSuggestions({ onSelect }: Props) {
         <button
           key={s}
           onClick={() => onSelect(s)}
-          className="px-3 py-1.5 text-xs rounded-full border border-white/10 text-slate-400 hover:border-cyan-500/50 hover:text-cyan-400 transition-colors"
+          className="px-3 py-1.5 text-xs rounded-full border border-white/10 text-slate-400 hover:border-sky-300/40 hover:text-sky-300 transition-colors"
         >
           {s}
         </button>

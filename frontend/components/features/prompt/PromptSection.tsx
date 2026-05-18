@@ -22,7 +22,7 @@ export default function PromptSection() {
     try {
       const query = await translatePrompt(input)
       const params = new URLSearchParams({ q: JSON.stringify(query) })
-      router.push(`/news?${params.toString()}`)
+      router.replace(`/news?${params.toString()}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong")
     } finally {
@@ -33,28 +33,48 @@ export default function PromptSection() {
   return (
     <div className="w-full max-w-2xl flex flex-col gap-4">
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-[#161b2e] border border-white/10 focus-within:border-cyan-500/50 transition-colors">
-          <svg className="w-5 h-5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-sky-300/20 focus-within:border-sky-300/40 transition-all shadow-[0_0_30px_rgba(125,211,252,0.1)] focus-within:shadow-[0_0_40px_rgba(125,211,252,0.2)]">
+          <svg
+            className="w-5 h-5 text-slate-400 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="find me news about..."
-            className="flex-1 bg-transparent text-sm text-slate-100 placeholder:text-slate-500 outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-50 placeholder:text-slate-400 outline-none"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-sky-300 hover:bg-sky-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
           >
             {loading ? (
               <Spinner />
             ) : (
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              <svg
+                className="w-4 h-4 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
               </svg>
             )}
           </button>

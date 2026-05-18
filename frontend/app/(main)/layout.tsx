@@ -1,12 +1,11 @@
-import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
+import MainShell from "@/components/layout/MainShell"
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8">{children}</main>
+    <div className="min-h-screen flex flex-col bg-[radial-gradient(circle_at_top_center,_#0f172a_0%,_#030712_100%)]">
+      <MainShell>{children}</MainShell>
       <Footer />
-    </>
+    </div>
   )
 }
