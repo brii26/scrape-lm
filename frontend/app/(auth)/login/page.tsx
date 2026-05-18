@@ -7,27 +7,16 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center bg-[#0a0f1e]">
       <div className="w-full max-w-sm flex flex-col items-center gap-6 px-6 py-10 rounded-2xl bg-[#111827] border border-white/8 shadow-[0_0_80px_-10px_rgba(34,211,238,0.15)]">
 
-        <div>
-          <svg width="60" height="60" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div className="flex flex-col items-center gap-2">
+          <svg width="72" height="72" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="mainGradient" x1="120" y1="100" x2="390" y2="390" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#4DF6FF"/>
-                <stop offset="1" stopColor="#00C2FF"/>
-              </linearGradient>
-              <radialGradient id="starGlow" cx="50%" cy="50%" r="65%">
-                <stop offset="0%" stopColor="#BFFFFF"/>
-                <stop offset="45%" stopColor="#4DF6FF"/>
-                <stop offset="100%" stopColor="#00C2FF"/>
+<radialGradient id="nodeGradient" cx="50%" cy="50%" r="70%">
+                <stop offset="0%" stopColor="#B8F2FF"/>
+                <stop offset="55%" stopColor="#78D9FF"/>
+                <stop offset="100%" stopColor="#59C8FF"/>
               </radialGradient>
               <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="10" result="blur"/>
-                <feMerge>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-              <filter id="starBlur" x="-200%" y="-200%" width="400%" height="400%">
-                <feGaussianBlur stdDeviation="6" result="blur"/>
+                <feGaussianBlur stdDeviation="8" result="blur"/>
                 <feMerge>
                   <feMergeNode in="blur"/>
                   <feMergeNode in="SourceGraphic"/>
@@ -35,26 +24,36 @@ export default function LoginPage() {
               </filter>
             </defs>
 
-            <g filter="url(#glow)">
-              <circle cx="220" cy="220" r="110" stroke="url(#mainGradient)" strokeWidth="28" strokeLinecap="round"/>
-              <line x1="298" y1="298" x2="388" y2="388" stroke="url(#mainGradient)" strokeWidth="28" strokeLinecap="round"/>
+<g filter="url(#glow)" stroke="url(#nodeGradient)" strokeWidth="18" strokeLinecap="round" opacity="0.6">
+              <line x1="256" y1="256" x2="256" y2="145"/>
+              <line x1="256" y1="256" x2="356" y2="200"/>
+              <line x1="256" y1="256" x2="356" y2="312"/>
+              <line x1="256" y1="256" x2="256" y2="367"/>
+              <line x1="256" y1="256" x2="156" y2="312"/>
+              <line x1="256" y1="256" x2="156" y2="200"/>
             </g>
 
-            <g filter="url(#starBlur)" opacity="0.95">
-              <path d="M390 95L401 129L435 140L401 151L390 185L379 151L345 140L379 129L390 95Z" fill="url(#starGlow)"/>
+            <g filter="url(#glow)" stroke="url(#nodeGradient)" strokeWidth="18" strokeLinecap="round" opacity="0.6">
+              <line x1="256" y1="145" x2="356" y2="200"/>
+              <line x1="356" y1="200" x2="356" y2="312"/>
+              <line x1="356" y1="312" x2="256" y2="367"/>
+              <line x1="256" y1="367" x2="156" y2="312"/>
+              <line x1="156" y1="312" x2="156" y2="200"/>
+              <line x1="156" y1="200" x2="256" y2="145"/>
             </g>
-            <g filter="url(#starBlur)" opacity="0.85">
-              <path d="M405 210L411 228L429 234L411 240L405 258L399 240L381 234L399 228L405 210Z" fill="url(#starGlow)"/>
-            </g>
-            <g filter="url(#starBlur)" opacity="0.8">
-              <path d="M90 345L98 369L122 377L98 385L90 409L82 385L58 377L82 369L90 345Z" fill="url(#starGlow)"/>
-            </g>
+
+            <circle cx="256" cy="256" r="42" fill="url(#nodeGradient)" filter="url(#glow)"/>
+            <circle cx="256" cy="125" r="28" fill="url(#nodeGradient)" filter="url(#glow)"/>
+            <circle cx="380" cy="190" r="28" fill="url(#nodeGradient)" filter="url(#glow)"/>
+            <circle cx="380" cy="322" r="28" fill="url(#nodeGradient)" filter="url(#glow)"/>
+            <circle cx="256" cy="387" r="28" fill="url(#nodeGradient)" filter="url(#glow)"/>
+            <circle cx="132" cy="322" r="28" fill="url(#nodeGradient)" filter="url(#glow)"/>
+            <circle cx="132" cy="190" r="28" fill="url(#nodeGradient)" filter="url(#glow)"/>
           </svg>
-        </div>
-
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-slate-100">Scrape-LM</h1>
-          <p className="text-sm text-slate-500 mt-1">Ask anything and get live news scraped fresh</p>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-slate-100">Scrape-LM</h1>
+            <p className="text-sm text-slate-500 mt-1">Ask anything and get live news scraped fresh</p>
+          </div>
         </div>
 
         <div className="w-full flex flex-col gap-3">
