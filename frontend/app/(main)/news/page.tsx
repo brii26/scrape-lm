@@ -37,14 +37,8 @@ export default async function NewsPage({ searchParams }: Props) {
       <p className="text-sm text-slate-500">
         {items.length} results for <span className="font-medium text-slate-200">{query.topic}</span>
       </p>
-      {items.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <NewsGrid items={items} />
-      )}
-      {items.length > 0 && (
-        <PaginationWrapper currentPage={currentPage} />
-      )}
+      {items.length === 0 ? <EmptyState /> : <NewsGrid items={items} />}
+      {items.length > 0 && <PaginationWrapper currentPage={currentPage} />}
     </div>
   )
 }

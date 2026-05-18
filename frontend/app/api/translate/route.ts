@@ -45,7 +45,10 @@ export async function POST(req: NextRequest) {
 
   const result = ScrapeQuerySchema.safeParse(parsed)
   if (!result.success) {
-    return NextResponse.json({ error: "Invalid query shape", details: result.error.flatten() }, { status: 422 })
+    return NextResponse.json(
+      { error: "Invalid query shape", details: result.error.flatten() },
+      { status: 422 }
+    )
   }
 
   return NextResponse.json({ data: result.data })
