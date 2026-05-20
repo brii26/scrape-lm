@@ -17,6 +17,24 @@ export async function translatePrompt(prompt: string): Promise<ScrapeQuery> {
   return data
 }
 
+export async function fetchNewsClient(query: ScrapeQuery): Promise<NewsResponse> {
+  const res = await fetch("/api/news", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(query),
+  })
+
+  if (!res.ok) {
+    const body = await res.json()
+    const message = body.message ?? body.error ?? "Failed to fetch news"
+    const err = new Error(message)
+    ;(err as any).status = res.status
+    throw err
+  }
+
+  return res.json()
+}
+
 export async function fetchNews(query: ScrapeQuery, token: string): Promise<NewsResponse> {
   const res = await fetch(`${API_BASE_URL}/api/scrape`, {
     method: "POST",

@@ -1,16 +1,17 @@
 "use client"
 
-import { PAGINATION } from "@/lib/constants"
-
 interface Props {
   page: number
+  totalPages: number
   onPageChange: (page: number) => void
 }
 
-export default function Pagination({ page, onPageChange }: Props) {
+export default function Pagination({ page, totalPages, onPageChange }: Props) {
+  if (totalPages <= 1) return null
+
   return (
     <div className="flex items-center gap-2 justify-center">
-      {Array.from({ length: PAGINATION.TOTAL_PAGES }, (_, i) => i + 1).map((p) => (
+      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
         <button
           key={p}
           onClick={() => onPageChange(p)}

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
 
 interface Props {
   onBurgerClick?: () => void
@@ -9,6 +10,11 @@ interface Props {
 
 export default function Navbar({ onBurgerClick }: Props) {
   const { logout, user } = useAuth()
+  const router = useRouter()
+
+  const handleLogoClick = () => {
+    window.location.href = "/"
+  }
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -37,7 +43,7 @@ export default function Navbar({ onBurgerClick }: Props) {
 
         <div className="w-px h-5 bg-white/10" />
 
-        <div className="flex items-center gap-1 flex-1">
+        <button onClick={handleLogoClick} className="flex items-center gap-1 flex-1 cursor-pointer">
           <svg
             width="36"
             height="36"
@@ -96,7 +102,7 @@ export default function Navbar({ onBurgerClick }: Props) {
             <circle cx="132" cy="190" r="28" fill="url(#nodeGradientN)" filter="url(#glowN)" />
           </svg>
           <span className="font-semibold text-lg text-slate-50">scrape-lm</span>
-        </div>
+        </button>
 
         <div className="relative flex items-center" ref={dropdownRef}>
           <button
@@ -108,6 +114,7 @@ export default function Navbar({ onBurgerClick }: Props) {
                 src={user.image}
                 alt={user.name ?? "User"}
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
               />
             ) : (
               <div className="w-full h-full bg-slate-700 flex items-center justify-center text-xs text-slate-300 font-medium">

@@ -1,17 +1,16 @@
 "use client"
 
-const suggestions = [
-  "Latest tech news from the US",
-  "Oil prices and energy news from GCC",
-  "Politics news from UK",
-  "Indonesian economy updates",
-]
+import { useSuggestions } from "@/context/SuggestionsContext"
 
 interface Props {
   onSelect: (text: string) => void
 }
 
 export default function PromptSuggestions({ onSelect }: Props) {
+  const suggestions = useSuggestions()
+
+  if (suggestions.length === 0) return null
+
   return (
     <div className="flex flex-wrap gap-2">
       {suggestions.map((s) => (
