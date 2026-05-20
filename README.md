@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="docs/banner.svg" width="480" />
+<img src="docs/banner.svg" width="720" />
 
 </div>
 
