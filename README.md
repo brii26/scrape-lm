@@ -1,5 +1,18 @@
 <div align="center">
-   <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=260&color=0:0f172a,100:030712&text=scrape-lm&fontColor=ffffff&fontSize=62&desc=AI-Powered%20News%20Aggregator&descAlignY=76&descSize=17&descColor=7dd3fc" />
+   <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=180&color=0:0f172a,100:030712" />
+
+   <br/>
+
+   <table border="0" cellspacing="0" cellpadding="0">
+     <tr>
+       <td valign="middle"><img src="docs/logo.svg" width="90" height="90" /></td>
+       <td valign="middle" align="left">&nbsp;&nbsp;&nbsp;</td>
+       <td valign="middle" align="left">
+         <h1>scrape-lm</h1>
+         <p>AI-Powered News Aggregator</p>
+       </td>
+     </tr>
+   </table>
 </div>
 
 <div align="center">

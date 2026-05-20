@@ -1,0 +1,39 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="nodeGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#B8F2FF" />
+      <stop offset="55%" stop-color="#78D9FF" />
+      <stop offset="100%" stop-color="#59C8FF" />
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)" stroke="url(#nodeGradient)" stroke-width="18" stroke-linecap="round" opacity="0.6">
+    <line x1="256" y1="256" x2="256" y2="145" />
+    <line x1="256" y1="256" x2="356" y2="200" />
+    <line x1="256" y1="256" x2="356" y2="312" />
+    <line x1="256" y1="256" x2="256" y2="367" />
+    <line x1="256" y1="256" x2="156" y2="312" />
+    <line x1="256" y1="256" x2="156" y2="200" />
+  </g>
+  <g filter="url(#glow)" stroke="url(#nodeGradient)" stroke-width="18" stroke-linecap="round" opacity="0.6">
+    <line x1="256" y1="145" x2="356" y2="200" />
+    <line x1="356" y1="200" x2="356" y2="312" />
+    <line x1="356" y1="312" x2="256" y2="367" />
+    <line x1="256" y1="367" x2="156" y2="312" />
+    <line x1="156" y1="312" x2="156" y2="200" />
+    <line x1="156" y1="200" x2="256" y2="145" />
+  </g>
+  <circle cx="256" cy="256" r="42" fill="url(#nodeGradient)" filter="url(#glow)" />
+  <circle cx="256" cy="125" r="28" fill="url(#nodeGradient)" filter="url(#glow)" />
+  <circle cx="380" cy="190" r="28" fill="url(#nodeGradient)" filter="url(#glow)" />
+  <circle cx="380" cy="322" r="28" fill="url(#nodeGradient)" filter="url(#glow)" />
+  <circle cx="256" cy="387" r="28" fill="url(#nodeGradient)" filter="url(#glow)" />
+  <circle cx="132" cy="322" r="28" fill="url(#nodeGradient)" filter="url(#glow)" />
+  <circle cx="132" cy="190" r="28" fill="url(#nodeGradient)" filter="url(#glow)" />
+</svg>
