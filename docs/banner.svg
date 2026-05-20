@@ -1,12 +1,12 @@
-<svg width="600" height="110" viewBox="0 0 600 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="800" height="150" viewBox="0 0 800 150" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="ng" cx="50%" cy="50%" r="70%">
       <stop offset="0%" stop-color="#B8F2FF" />
       <stop offset="55%" stop-color="#78D9FF" />
       <stop offset="100%" stop-color="#59C8FF" />
     </radialGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="3" result="blur" />
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
       <feMerge>
         <feMergeNode in="blur" />
         <feMergeNode in="SourceGraphic" />
@@ -14,8 +14,8 @@
     </filter>
   </defs>
 
-  <!-- Network graph icon, scaled to fit 90x90 centered in 110px height -->
-  <g transform="translate(10, 10) scale(0.176)">
+  <!-- Logo: 100x100, starting at x=195 y=25, scale=100/512 -->
+  <g transform="translate(195, 25) scale(0.1953)">
     <g filter="url(#glow)" stroke="url(#ng)" stroke-width="18" stroke-linecap="round" opacity="0.7">
       <line x1="256" y1="256" x2="256" y2="145" />
       <line x1="256" y1="256" x2="356" y2="200" />
@@ -41,9 +41,26 @@
     <circle cx="132" cy="190" r="28" fill="url(#ng)" filter="url(#glow)" />
   </g>
 
-  <!-- Title -->
-  <text x="108" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="42" font-weight="700" fill="#ffffff" letter-spacing="-1">scrape-lm</text>
+  <!-- Title: starts at x=315, centered with logo at 400 -->
+  <text
+    x="315"
+    y="85"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+    font-size="52"
+    font-weight="700"
+    fill="#ffffff"
+    letter-spacing="-1"
+  >scrape-lm</text>
 
-  <!-- Subtitle -->
-  <text x="110" y="84" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="400" fill="#7dd3fc" letter-spacing="0.5">AI-Powered News Aggregator</text>
+  <!-- Subtitle: centered at x=400 -->
+  <text
+    x="400"
+    y="118"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+    font-size="16"
+    font-weight="400"
+    fill="#7dd3fc"
+    letter-spacing="1"
+    text-anchor="middle"
+  >AI-Powered News Aggregator</text>
 </svg>

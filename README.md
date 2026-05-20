@@ -247,18 +247,6 @@ scrape-lm/
 
 ---
 
-## Author
+## License
 
-<div align="center">
-
-| Name |
-|:---|
-| Brian Ricardo Tamin |
-
-</div>
-
----
-
-<div align="center">
-   <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=120&color=0:030712,100:0f172a&section=footer" />
-</div>
+MIT License. See [LICENSE](LICENSE) for details.
