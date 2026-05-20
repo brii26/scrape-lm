@@ -2,15 +2,7 @@
 
 <br/>
 
-<table border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td valign="middle"><img src="docs/logo.svg" width="80" height="80" /></td>
-    <td valign="middle">&nbsp;&nbsp;&nbsp;</td>
-    <td valign="middle" align="left"><h1>scrape-lm</h1></td>
-  </tr>
-</table>
-
-<p>AI-Powered News Aggregator</p>
+<img src="docs/banner.svg" width="480" />
 
 </div>
 
