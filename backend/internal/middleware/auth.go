@@ -41,7 +41,7 @@ func Auth(jwtSecret string) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", claims["sub"])
+		c.Set("userID", claims["user_id"])
 		c.Next()
 	}
 }
