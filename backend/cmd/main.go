@@ -21,7 +21,7 @@ func main() {
 
 	// auth
 	authService := auth.NewService(cfg.JWTSecret, redisClient)
-	authHandler := auth.NewHandler(authService, cfg.GoogleClientID, cfg.GoogleClientSecret, cfg.GoogleRedirectURL)
+	authHandler := auth.NewHandler(authService, cfg.GoogleClientID)
 
 	// news
 	newsService := news.NewService(redisClient)
@@ -37,9 +37,6 @@ func main() {
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
-
-	// debug only — remove before deploy
-	r.POST("/debug/scrape", newsHandler.Scrape)
 
 	// routes
 	public := r.Group("")

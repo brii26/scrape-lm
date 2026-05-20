@@ -12,11 +12,6 @@ func (r *RedisClient) SaveSession(userID string, token string, ttl time.Duration
 	return r.Set(key, token, ttl)
 }
 
-func (r *RedisClient) GetSession(userID string) (string, error) {
-	key := fmt.Sprintf("%s%s", sessionPrefix, userID)
-	return r.Get(key)
-}
-
 func (r *RedisClient) DeleteSession(userID string) error {
 	key := fmt.Sprintf("%s%s", sessionPrefix, userID)
 	return r.Delete(key)

@@ -8,14 +8,12 @@ import (
 )
 
 type Config struct {
-	Port               string
-	RedisAddr          string
-	JWTSecret          string
-	AppEnv             string
-	GoogleClientID     string
-	GoogleClientSecret string
-	GoogleRedirectURL  string
-	AllowedOrigin      string
+	Port           string
+	RedisAddr      string
+	JWTSecret      string
+	AppEnv         string
+	GoogleClientID string
+	AllowedOrigin  string
 }
 
 func Load() *Config {
@@ -24,14 +22,12 @@ func Load() *Config {
 	}
 
 	cfg := &Config{
-		Port:               getEnv("PORT", "8080"),
-		RedisAddr:          getEnv("REDIS_ADDR", "localhost:6379"),
-		JWTSecret:          getEnv("JWT_SECRET", ""),
-		AppEnv:             getEnv("APP_ENV", "development"),
-		GoogleClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
-		GoogleClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
-		GoogleRedirectURL:  getEnv("GOOGLE_REDIRECT_URL", "http://localhost:8080/auth/google/callback"),
-		AllowedOrigin:      getEnv("ALLOWED_ORIGIN", "http://localhost:3000"),
+		Port:           getEnv("PORT", "8080"),
+		RedisAddr:      getEnv("REDIS_ADDR", "localhost:6379"),
+		JWTSecret:      getEnv("JWT_SECRET", ""),
+		AppEnv:         getEnv("APP_ENV", "development"),
+		GoogleClientID: getEnv("GOOGLE_CLIENT_ID", ""),
+		AllowedOrigin:  getEnv("ALLOWED_ORIGIN", "http://localhost:3000"),
 	}
 
 	if cfg.JWTSecret == "" {

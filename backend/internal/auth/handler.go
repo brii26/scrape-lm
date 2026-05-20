@@ -15,7 +15,7 @@ type Handler struct {
 	googleClientID  string
 }
 
-func NewHandler(service *Service, clientID, _, _ string) *Handler {
+func NewHandler(service *Service, clientID string) *Handler {
 	return &Handler{service: service, googleClientID: clientID}
 }
 
