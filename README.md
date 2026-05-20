@@ -8,7 +8,7 @@
 
 <div align="center">
 
-<br/><br/>
+<br/>
 
 <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
 <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
@@ -74,11 +74,7 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
 
 ## Architecture
 
-<div align="center">
-
-> Architecture diagram placeholder, replace with `docs/architecture/architecture.png`
-
-</div>
+<div align="center"></div>
 
 scrape-lm follows a layered architecture where the Next.js frontend acts as the orchestration layer. All browser-facing API calls go through Next.js API routes, which communicate with the Go backend over the internal Docker network. The browser never talks to Go directly.
 
@@ -133,8 +129,6 @@ Incoming request
 ## Screenshots
 
 <div align="center">
-
-> Application screenshots placeholder, replace with actual screenshots once available.
 
 | Home | Results | History Sidebar |
 |:---:|:---:|:---:|
