@@ -38,6 +38,9 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
+	// debug only — remove before deploy
+	r.POST("/debug/scrape", newsHandler.Scrape)
+
 	// routes
 	public := r.Group("")
 	protected := r.Group("/api")

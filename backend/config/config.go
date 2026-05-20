@@ -8,18 +8,18 @@ import (
 )
 
 type Config struct {
-	Port                string
-	RedisAddr           string
-	JWTSecret           string
-	AppEnv              string
-	GoogleClientID      string
-	GoogleClientSecret  string
-	GoogleRedirectURL   string
-	AllowedOrigin       string
+	Port               string
+	RedisAddr          string
+	JWTSecret          string
+	AppEnv             string
+	GoogleClientID     string
+	GoogleClientSecret string
+	GoogleRedirectURL  string
+	AllowedOrigin      string
 }
 
 func Load() *Config {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(".env.development"); err != nil {
 		log.Println("no .env file, reading from system env")
 	}
 
