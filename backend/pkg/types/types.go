@@ -17,7 +17,6 @@ type NewsItem struct {
 	Title       string `json:"title"`
 	URL         string `json:"url"`
 	Source      string `json:"source"`
-	Region      string `json:"region"`
 	PublishedAt string `json:"published_at"`
 	Summary     string `json:"summary"`
 	ImageURL    string `json:"image_url"`

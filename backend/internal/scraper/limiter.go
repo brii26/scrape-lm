@@ -2,10 +2,8 @@ package scraper
 
 import (
 	"math/rand"
+	"net/http"
 	"time"
-
-	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/extensions"
 )
 
 var userAgents = []string{
@@ -16,23 +14,26 @@ var userAgents = []string{
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
 }
 
-func applyLimiter(c *colly.Collector) error {
-	extensions.Referer(c)
-
-	c.OnRequest(func(r *colly.Request) {
-		r.Headers.Set("User-Agent", randomUserAgent())
-		r.Headers.Set("Accept-Language", "en-US,en;q=0.9")
-		r.Headers.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-	})
-
-	return c.Limit(&colly.LimitRule{
-		DomainGlob:  "*",
-		Parallelism: 2,
-		Delay:       1 * time.Second,
-		RandomDelay: 1 * time.Second,
-	})
-}
-
 func randomUserAgent() string {
 	return userAgents[rand.Intn(len(userAgents))]
+}
+
+func newHTTPClient() *http.Client {
+	return &http.Client{
+		Timeout: 10 * time.Second,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			if len(via) >= 10 {
+				return http.ErrUseLastResponse
+			}
+			setRequestHeaders(req)
+			return nil
+		},
+	}
+}
+
+func setRequestHeaders(req *http.Request) {
+	req.Header.Set("User-Agent", randomUserAgent())
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
+	req.Header.Set("Referer", "https://www.google.com/")
 }

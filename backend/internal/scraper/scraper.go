@@ -1,45 +1,93 @@
 package scraper
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"log"
+	"sort"
 	"strings"
 	"sync"
-
-	"github.com/gocolly/colly/v2"
-	"github.com/mmcdole/gofeed"
+	"time"
 
 	"backend/pkg/types"
 )
 
-const maxResults = 30
+const (
+	maxFetch   = 20
+	maxResults = 30
+	perPage    = 6
+)
 
-func Scrape(query types.ScrapeQuery) []types.NewsItem {
+// Scrape fetches and enriches news for the given topic, returning all results
+// without pagination. Pagination is applied by the service layer after cache retrieval.
+func Scrape(topic string) []types.NewsItem {
+	items, err := fetchRSS(topic)
+	if err != nil {
+		log.Printf("rss fetch failed: %v", err)
+		return nil
+	}
+
+	cutoff := time.Now().AddDate(0, 0, -7)
+	var recent []rssItem
+	for _, item := range items {
+		t := parsePubDate(item.PubDate)
+		if !t.IsZero() && t.After(cutoff) {
+			recent = append(recent, item)
+		}
+	}
+
+	if len(recent) > maxFetch {
+		recent = recent[:maxFetch]
+	}
+
 	var (
 		mu      sync.Mutex
 		results []types.NewsItem
+		wg      sync.WaitGroup
+		sem     = make(chan struct{}, 5)
 	)
 
-	var wg sync.WaitGroup
-
-	for i := range Sources {
+	for i := range recent {
 		wg.Add(1)
-		go func(s SiteConfig) {
+		go func(item rssItem) {
 			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
 
-			items := scrapeRSS(s)
-			if len(items) == 0 {
-				items = scrapeHTML(s)
+			encodedURL := item.Link
+			if encodedURL == "" {
+				encodedURL = item.GUID
 			}
 
-			filtered := applyFilters(items, query.Filters)
+			actualURL, err := decodeGoogleNewsURL(encodedURL)
+			if err != nil {
+				log.Printf("decode failed for %q: %v", item.Title, err)
+				actualURL = encodedURL
+			}
+
+			summary, imageURL := fetchOGTags(actualURL)
 
 			mu.Lock()
-			results = append(results, filtered...)
+			results = append(results, types.NewsItem{
+				ID:          hashStr(actualURL),
+				Title:       cleanTitle(item.Title, item.Source),
+				URL:         actualURL,
+				Source:      item.Source,
+				PublishedAt: item.PubDate,
+				Summary:     summary,
+				ImageURL:    imageURL,
+			})
 			mu.Unlock()
-		}(Sources[i])
+		}(recent[i])
 	}
 
 	wg.Wait()
+
+	sort.Slice(results, func(i, j int) bool {
+		ti := parsePubDate(results[i].PublishedAt)
+		tj := parsePubDate(results[j].PublishedAt)
+		return ti.After(tj)
+	})
 
 	if len(results) > maxResults {
 		results = results[:maxResults]
@@ -48,66 +96,52 @@ func Scrape(query types.ScrapeQuery) []types.NewsItem {
 	return results
 }
 
-func scrapeRSS(site SiteConfig) []types.NewsItem {
-	if site.RSSFallback == "" {
-		return nil
-	}
-
-	fp := gofeed.NewParser()
-	feed, err := fp.ParseURL(site.RSSFallback)
-	if err != nil {
-		log.Printf("rss failed for %s: %v", site.Name, err)
-		return nil
-	}
-
-	var items []types.NewsItem
-	for _, item := range feed.Items {
-		items = append(items, parseRSSItem(item, site.Name))
-	}
-	return items
+type PageResult struct {
+	Items    []types.NewsItem
+	Total    int
+	CacheHit bool
 }
 
-func scrapeHTML(site SiteConfig) []types.NewsItem {
-	if site.TitleSel == "" {
-		return nil
+func Paginate(items []types.NewsItem, filters types.Filters) PageResult {
+	filtered := applyFilters(items, filters)
+
+	if filters.Sort == "relevant" {
+		sort.SliceStable(filtered, func(i, j int) bool {
+			ti := parsePubDate(filtered[i].PublishedAt)
+			tj := parsePubDate(filtered[j].PublishedAt)
+			return ti.After(tj)
+		})
 	}
 
-	var items []types.NewsItem
-	c := colly.NewCollector()
+	total := len(filtered)
 
-	if err := applyLimiter(c); err != nil {
-		log.Printf("limiter failed for %s: %v", site.Name, err)
-		return nil
+	page := filters.Page
+	if page < 1 {
+		page = 1
 	}
-
-	c.OnHTML(site.TitleSel, func(e *colly.HTMLElement) {
-		items = append(items, parseHTMLElement(e, site))
-	})
-
-	c.OnError(func(r *colly.Response, err error) {
-		log.Printf("html scrape failed for %s: %v", site.Name, err)
-	})
-
-	c.Visit(site.URL)
-	return items
+	start := (page - 1) * perPage
+	if start >= total {
+		return PageResult{Items: []types.NewsItem{}, Total: total}
+	}
+	end := start + perPage
+	if end > total {
+		end = total
+	}
+	return PageResult{Items: filtered[start:end], Total: total}
 }
 
 func applyFilters(items []types.NewsItem, filters types.Filters) []types.NewsItem {
 	var result []types.NewsItem
-
 	for _, item := range items {
 		text := strings.ToLower(item.Title + " " + item.Summary)
-
 		if !matchesIncludes(text, filters.MustInclude) {
 			continue
 		}
 		if matchesExcludes(text, filters.MustExclude) {
 			continue
 		}
-
 		result = append(result, item)
 	}
-
 	return result
 }
 
@@ -127,4 +161,9 @@ func matchesExcludes(text string, keywords []string) bool {
 		}
 	}
 	return false
+}
+
+func hashStr(s string) string {
+	sum := sha256.Sum256([]byte(s))
+	return fmt.Sprintf("%x", sum)[:16]
 }
