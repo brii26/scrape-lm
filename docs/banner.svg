@@ -41,9 +41,9 @@
     <circle cx="132" cy="190" r="28" fill="url(#ng)" filter="url(#glow)" />
   </g>
 
-  <!-- Title: starts at x=315, centered with logo at 400 -->
+  <!-- Title: gap reduced to 10px from logo right edge (195+100+10=305) -->
   <text
-    x="315"
+    x="305"
     y="85"
     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
     font-size="52"
@@ -52,15 +52,15 @@
     letter-spacing="-1"
   >scrape-lm</text>
 
-  <!-- Subtitle: centered at x=400 -->
+  <!-- Subtitle: aligned to title left edge -->
   <text
-    x="400"
+    x="305"
     y="118"
     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
     font-size="16"
     font-weight="400"
     fill="#7dd3fc"
     letter-spacing="1"
-    text-anchor="middle"
+    text-anchor="start"
   >AI-Powered News Aggregator</text>
 </svg>
