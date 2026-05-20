@@ -190,11 +190,11 @@ The app will be available at `http://localhost` via Nginx on port 80.
 
 ```bash
 # Terminal 1: Redis
-docker run -p 6379:6379 redis:7-alpine
+docker compose up redis
 
 # Terminal 2: Backend
 cd backend
-go run ./cmd/main.go
+air
 
 # Terminal 3: Frontend
 cd frontend
