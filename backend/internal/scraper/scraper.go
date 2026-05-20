@@ -21,29 +21,22 @@ func Scrape(query types.ScrapeQuery) []types.NewsItem {
 
 	var wg sync.WaitGroup
 
-	for _, region := range query.Regions {
-		sites, ok := Sources[region]
-		if !ok {
-			continue
-		}
+	for i := range Sources {
+		wg.Add(1)
+		go func(s SiteConfig) {
+			defer wg.Done()
 
-		for _, site := range sites {
-			wg.Add(1)
-			go func(s SiteConfig) {
-				defer wg.Done()
+			items := scrapeRSS(s)
+			if len(items) == 0 {
+				items = scrapeHTML(s)
+			}
 
-				items := scrapeRSS(s)
-				if len(items) == 0 {
-					items = scrapeHTML(s)
-				}
+			filtered := applyFilters(items, query.Filters)
 
-				filtered := applyFilters(items, query.Filters)
-
-				mu.Lock()
-				results = append(results, filtered...)
-				mu.Unlock()
-			}(site)
-		}
+			mu.Lock()
+			results = append(results, filtered...)
+			mu.Unlock()
+		}(Sources[i])
 	}
 
 	wg.Wait()
@@ -69,7 +62,7 @@ func scrapeRSS(site SiteConfig) []types.NewsItem {
 
 	var items []types.NewsItem
 	for _, item := range feed.Items {
-		items = append(items, parseRSSItem(item, site.Region, site.Name))
+		items = append(items, parseRSSItem(item, site.Name))
 	}
 	return items
 }

@@ -24,7 +24,7 @@ func NewService(cache *cache.RedisClient) *Service {
 }
 
 func (s *Service) GetNews(query types.ScrapeQuery) ([]types.NewsItem, error) {
-	cacheKey := hash.CacheKey(query.Topic, query.Regions)
+	cacheKey := hash.CacheKey(query.Topic)
 
 	cached, err := s.cache.Get(cacheKey)
 	if err == nil {

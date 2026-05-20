@@ -1,9 +1,8 @@
 package types
 
 type ScrapeQuery struct {
-	Topic   string   `json:"topic"`
-	Regions []string `json:"region"`
-	Filters Filters  `json:"filters"`
+	Topic   string  `json:"topic"`
+	Filters Filters `json:"filters"`
 }
 
 type Filters struct {

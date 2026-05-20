@@ -29,12 +29,7 @@ func (h *Handler) Scrape(c *gin.Context) {
 		return
 	}
 
-	if len(query.Regions) == 0 {
-		response.Error(c, http.StatusBadRequest, "at least one region is required")
-		return
-	}
-
-	items, err := h.service.GetNews(query)
+items, err := h.service.GetNews(query)
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, "failed to fetch news")
 		return
