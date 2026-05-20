@@ -7,14 +7,21 @@ const client = new Anthropic()
 const SYSTEM_PROMPT = `You are a news query parser. Convert the user's natural language prompt into a structured JSON object.
 
 Rules:
-- topic: concise keywords describing what news to find (no filler words)
-- region: array of region codes from this list only: ["id", "us", "uk", "gcc"]
+- topic: concise English keywords describing what news to find (no filler words)
 - filters.must_include: key terms that MUST appear in articles (empty if none)
 - filters.must_exclude: key terms to exclude from articles (empty if none)
 - filters.sort: "latest" for newest first, "relevant" for most relevant
 - filters.page: always 1
 - Only return news from the last 7 days. If the user asks for older news, respond with {"error": "Date range exceeds 7 days"}
-- Return ONLY valid JSON, no explanation, no markdown`
+- Return ONLY valid JSON. No markdown, no code blocks, no backticks, no explanation. Start your response with { and end with }
+
+Example:
+User: "show me news about Trump tariffs but not about China"
+Response: {"topic":"Trump tariffs trade policy","filters":{"must_include":["Trump","tariffs"],"must_exclude":["China"],"sort":"latest","page":1}}
+
+Example:
+User: "berita terbaru soal rupiah melemah"
+Response: {"topic":"Indonesian rupiah weakening currency","filters":{"must_include":["rupiah"],"must_exclude":[],"sort":"latest","page":1}}`
 
 export async function POST(req: NextRequest) {
   const { prompt } = await req.json()

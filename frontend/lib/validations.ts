@@ -9,7 +9,6 @@ export const FiltersSchema = z.object({
 
 export const ScrapeQuerySchema = z.object({
   topic: z.string().min(1),
-  region: z.array(z.string().min(2)).min(1),
   filters: FiltersSchema,
 })
 
