@@ -26,7 +26,7 @@
 
 ## About
 
-scrape-lm is an AI-powered news aggregator that accepts natural language prompts, translates them into structured search queries using the Claude API, and scrapes Google News RSS in real time. Results are cached in Redis for 30 minutes, and each authenticated user gets a personalized quota, search history, and AI-curated prompt suggestions.
+scrape-lm is an AI-powered news aggregator that accepts natural language prompts, translates them into structured search queries using the Claude API, and scrapes Google News RSS in real time. Results are cached in Redis for 4 hours, and each authenticated user gets a personalized quota, search history, and AI-curated prompt suggestions.
 
 ---
 
@@ -39,19 +39,19 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
   Fetches live articles from Google News RSS and decodes obfuscated article URLs using Google's batchexecute API. Each article is enriched with OG metadata including title, description, and cover image.
 
 - **Redis Caching**
-  Scraped results are cached for 30 minutes using a SHA-256 key derived from the topic. Subsequent queries for the same topic are served instantly from cache without hitting the scraper.
+  Scraped results are cached for 4 hours using a SHA-256 key derived from the topic. Subsequent queries for the same topic are served instantly from cache without hitting the scraper.
 
 - **Per-Account Daily Quota**
-  Each authenticated user gets 10 searches per day, tracked atomically in Redis with a 24-hour TTL. Cache hits do not count against the quota.
+  Each authenticated user gets 10 searches per day, tracked atomically in Redis with a 4-hour TTL. Cache hits do not count against the quota.
 
 - **Search History**
-  The last 20 searches per account are stored in a Redis List, persisted for 24 hours, and surfaced in the sidebar for one-click re-run.
+  The last 20 searches per account are stored in a Redis List, persisted for 4 hours, and surfaced in the sidebar for one-click re-run.
 
 - **AI Prompt Suggestions**
   The home screen surfaces 4 AI-curated search suggestions derived from live Google News headlines, refreshed every 5 minutes via an in-memory TTL store on the Next.js server.
 
-- **Google OAuth Authentication**
-  Authentication is handled by NextAuth with Google OAuth. On login, the backend issues a signed JWT stored as an httpOnly session cookie, validated by the Go auth middleware on every protected request.
+- **OAuth Authentication**
+  Authentication is handled by NextAuth with Google and GitHub OAuth. On login, the backend issues a signed JWT stored as an httpOnly session cookie, validated by the Go auth middleware on every protected request.
 
 - **Paginated News Feed**
   Results are paginated at 6 cards per page, up to 5 pages (30 articles max). Filters are applied in memory after cache retrieval, so pagination never triggers a re-scrape.
@@ -67,14 +67,12 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
 | Backend | Go 1.24, Gin |
 | Scraping | Google News RSS, net/http, batchexecute URL decoder |
 | Cache | Redis 7 (news, quota, history, sessions) |
-| Auth | NextAuth v5, Google OAuth 2.0, JWT (golang-jwt) |
+| Auth | NextAuth v5, Google OAuth 2.0, GitHub OAuth, JWT (golang-jwt) |
 | Deployment | Docker, Docker Compose, Nginx |
 
 ---
 
 ## Architecture
-
-<div align="center"></div>
 
 scrape-lm follows a layered architecture where the Next.js frontend acts as the orchestration layer. All browser-facing API calls go through Next.js API routes, which communicate with the Go backend over the internal Docker network. The browser never talks to Go directly.
 
@@ -92,7 +90,7 @@ Browser
   │           └── Google News RSS
   │                 └── batchexecute decoder    resolve real article URLs
   │                       └── OG tag fetch      enrich with description + image
-  │                             └── Redis SET   30 min TTL
+  │                             └── Redis SET   4 hour TTL
   │
   ├── GET /api/quota             (Next.js → Go → Redis String)
   ├── GET /api/history           (Next.js → Go → Redis List)
@@ -103,9 +101,9 @@ Browser
 
 | Key Pattern | Type | TTL | Purpose |
 |:---|:---|:---|:---|
-| `<sha256(topic)>` | String (JSON) | 30 min | Cached news results |
-| `quota:<userID>` | String (int) | 24 h | Daily search count per user |
-| `history:<userID>` | List | 24 h | Last 20 searches per user |
+| `<sha256(topic)>` | String (JSON) | 4 h | Cached news results |
+| `quota:<userID>` | String (int) | 4 h | Daily search count per user |
+| `history:<userID>` | List | 4 h | Last 20 searches per user |
 | `session:<userID>` | String | 24 h | Backend JWT token |
 
 ### Quota and Cache Hit Logic
@@ -174,6 +172,8 @@ AUTH_SECRET=your_auth_secret
 NEXTAUTH_URL=https://yourdomain.com
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
 NEXT_PUBLIC_API_URL=http://backend:8080
 ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
@@ -189,17 +189,15 @@ The app will be available at `http://localhost` via Nginx on port 80.
 ### Run locally (development)
 
 ```bash
-# Terminal 1: Redis
 docker compose up redis
+```
 
-# Terminal 2: Backend
-cd backend
-air
+```bash
+cd backend && air
+```
 
-# Terminal 3: Frontend
-cd frontend
-npm install
-npm run dev
+```bash
+cd frontend && npm run dev
 ```
 
 ---
@@ -212,7 +210,7 @@ scrape-lm/
 │   ├── cmd/main.go                   # Entry point, Gin router wiring
 │   ├── config/config.go              # Env-based config loader
 │   ├── internal/
-│   │   ├── auth/                     # Google OAuth callback, JWT issuance
+│   │   ├── auth/                     # Google + GitHub OAuth callbacks, JWT issuance
 │   │   ├── cache/                    # Redis client, quota, history, session
 │   │   ├── middleware/               # Auth, CORS, logger, rate limiter
 │   │   ├── news/                     # Handler, service, routes
@@ -224,7 +222,7 @@ scrape-lm/
 ├── frontend/
 │   ├── app/
 │   │   ├── (auth)/                   # Login page
-│   │   ├── (main)/                   # Protected pages (home, news)
+│   │   ├── (main)/                   # Protected pages
 │   │   └── api/                      # Next.js API routes (proxy + AI)
 │   ├── components/
 │   │   ├── features/                 # NewsCard, NewsGrid, PromptSection
@@ -247,4 +245,3 @@ MIT License. See [LICENSE](LICENSE) for details.
 <div align="center">
   <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=120&color=0:0d1f3c,50:1a5c8a,100:14b8a6&section=footer" />
 </div>
-
