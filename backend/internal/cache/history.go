@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	historyPrefix  = "history:"
-	historyMaxLen  = 20
-	historyTTL     = 24 * time.Hour
+	historyPrefix = "history:"
+	historyMaxLen = 20
+	historyTTL    = 1 * time.Hour
 )
 
 func (r *RedisClient) AppendHistory(userID string, entry string) error {

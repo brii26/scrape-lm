@@ -8,7 +8,7 @@ import (
 const (
 	quotaPrefix = "quota:"
 	QuotaLimit  = 10
-	quotaTTL    = 24 * time.Hour
+	quotaTTL    = 4 * time.Hour
 )
 
 func (r *RedisClient) GetQuota(userID string) (int, error) {

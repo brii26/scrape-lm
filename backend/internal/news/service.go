@@ -15,7 +15,7 @@ import (
 	"backend/pkg/types"
 )
 
-const cacheTTL = 30 * time.Minute
+const cacheTTL = 15 * time.Minute
 
 var ErrQuotaExceeded = errors.New("quota exceeded")
 
