@@ -244,3 +244,7 @@ scrape-lm/
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
+<div align="center">
+  <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=120&color=0:0d1f3c,50:1a5c8a,100:14b8a6&section=footer" />
+</div>
+
