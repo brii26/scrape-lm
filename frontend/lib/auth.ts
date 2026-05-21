@@ -12,7 +12,6 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     backendJwt?: string
-    idToken?: string
   }
 }
 
@@ -27,28 +26,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     GitHub({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account?.id_token) {
-        const res = await fetch(`${API_BASE_URL}/auth/callback/google`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_token: account.id_token }),
-        })
-
-        if (res.ok) {
-          const { data } = await res.json()
-          token.backendJwt = data.token
-        }
-
-        token.idToken = account.id_token
-      }
-      return token
-    },
+		async jwt({ token, account }) {
+			if (account?.provider === "google" && account?.id_token) {
+				const res = await fetch(`${API_BASE_URL}/auth/callback/google`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ id_token: account.id_token }),
+				})
+				if (res.ok) {
+					const { data } = await res.json()
+					token.backendJwt = data.token
+				}
+			}
+	
+			if (account?.provider === "github" && account?.access_token) {
+				const githubUser = await fetch("https://api.github.com/user", {
+					headers: { Authorization: `Bearer ${account.access_token}` },
+				}).then(r => r.json())
+				if (githubUser?.id) {
+					const res = await fetch(`${API_BASE_URL}/auth/callback/github`, {
+						method: "POST",
+						headers: { "Content-Type": "application/json"},
+						body: JSON.stringify({ id:  githubUser.id,  email: githubUser.email }),
+					})
+					if (res.ok) {
+						const { data } = await res.json()
+						token.backendJwt=data.token
+					}
+				}
+			}
+	
+			return token
+		},
     async session({ session, token }) {
       session.backendJwt = token.backendJwt
       return session

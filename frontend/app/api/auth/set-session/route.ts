@@ -6,7 +6,7 @@ export async function GET() {
   const session = await auth()
 
   if (!session?.backendJwt) {
-    return NextResponse.redirect("/api/auth/signin")
+    return NextResponse.redirect(new URL("/login", process.env.NEXTAUTH_URL!))
   }
 
   const cookieStore = await cookies()
