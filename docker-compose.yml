@@ -24,6 +24,7 @@ services:
   backend:
     image: brianrt2/scrape-lm-backend:latest
     container_name: scrape-lm-backend
+    restart: unless-stopped
     env_file:
       - ./backend/.env.production
     depends_on:
@@ -35,6 +36,7 @@ services:
   frontend:
     image: brianrt2/scrape-lm-frontend:latest
     container_name: scrape-lm-frontend
+    restart: unless-stopped
     env_file:
       - ./frontend/.env.production
     depends_on:
