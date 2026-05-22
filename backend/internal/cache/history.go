@@ -2,13 +2,11 @@ package cache
 
 import (
 	"fmt"
-	"time"
 )
 
 const (
 	historyPrefix = "history:"
 	historyMaxLen = 20
-	historyTTL    = 1 * time.Hour
 )
 
 func (r *RedisClient) AppendHistory(userID string, entry string) error {
@@ -16,7 +14,7 @@ func (r *RedisClient) AppendHistory(userID string, entry string) error {
 	pipe := r.Client.TxPipeline()
 	pipe.LPush(Ctx, key, entry)
 	pipe.LTrim(Ctx, key, 0, historyMaxLen-1)
-	pipe.Expire(Ctx, key, historyTTL)
+	pipe.ExpireNX(Ctx, key, untilMidnightUTC())
 	_, err := pipe.Exec(Ctx)
 	return err
 }
