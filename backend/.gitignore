@@ -1,0 +1,12 @@
+.env*
+!.env.example
+
+# build output
+server
+
+# air hot reload
+tmp/
+
+# editor & OS
+.vscode/
+.DS_Store
