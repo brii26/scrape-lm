@@ -74,7 +74,9 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
 
 ## Architecture
 
-scrape-lm follows a layered architecture where the Next.js frontend acts as the orchestration layer. All browser-facing API calls go through Next.js API routes, which communicate with the Go backend over the internal Docker network. The browser never talks to Go directly.
+<div align="center">
+  <img src="docs/architecture.png" width="720" />
+</div>
 
 ### Request Flow
 
