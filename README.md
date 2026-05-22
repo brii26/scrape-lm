@@ -24,6 +24,10 @@
 
 ---
 
+**Live:** [scrapelm.com](https://scrapelm.com)
+
+---
+
 ## About
 
 scrape-lm is an AI-powered news aggregator that accepts natural language prompts, translates them into structured search queries using the Claude API, and scrapes Google News RSS in real time. Results are cached in Redis for 4 hours, and each authenticated user gets a personalized quota, search history, and AI-curated prompt suggestions.
@@ -78,27 +82,6 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
   <img src="docs/architecture.png" width="720" />
 </div>
 
-### Request Flow
-
-```
-Browser
-  │
-  ├── POST /api/translate        (Next.js API route)
-  │     └── Claude API           prompt → structured ScrapeQuery JSON
-  │
-  ├── POST /api/news             (Next.js API route)
-  │     └── POST /api/scrape    (Go / Gin)
-  │           ├── Redis GET      cache hit → return immediately
-  │           └── Google News RSS
-  │                 └── batchexecute decoder    resolve real article URLs
-  │                       └── OG tag fetch      enrich with description + image
-  │                             └── Redis SET   4 hour TTL
-  │
-  ├── GET /api/quota             (Next.js → Go → Redis String)
-  ├── GET /api/history           (Next.js → Go → Redis List)
-  └── GET /api/suggestions       (Next.js → Claude API, 5 min in-memory TTL)
-```
-
 ### Redis Key Schema
 
 | Key Pattern | Type | TTL | Purpose |
@@ -107,22 +90,6 @@ Browser
 | `quota:<userID>` | String (int) | 4 h | Daily search count per user |
 | `history:<userID>` | List | 4 h | Last 20 searches per user |
 | `session:<userID>` | String | 24 h | Backend JWT token |
-
-### Quota and Cache Hit Logic
-
-```
-Incoming request
-  │
-  ├── quota >= 10?  → 429 Too Many Requests
-  │
-  ├── cache hit?
-  │     ├── page 1 + results > 0  → append history only (no quota increment)
-  │     └── return cached result
-  │
-  └── cache miss
-        ├── scrape + store in Redis
-        └── page 1 + results > 0  → increment quota + append history
-```
 
 ---
 
@@ -212,27 +179,68 @@ scrape-lm/
 │   ├── cmd/main.go                   # Entry point, Gin router wiring
 │   ├── config/config.go              # Env-based config loader
 │   ├── internal/
-│   │   ├── auth/                     # Google + GitHub OAuth callbacks, JWT issuance
-│   │   ├── cache/                    # Redis client, quota, history, session
-│   │   ├── middleware/               # Auth, CORS, logger, rate limiter
-│   │   ├── news/                     # Handler, service, routes
-│   │   └── scraper/                  # RSS fetch, OG enrichment, URL decoder
+│   │   ├── auth/
+│   │   │   ├── handler.go            # Google + GitHub OAuth callback handlers
+│   │   │   ├── routes.go             # Auth route registration
+│   │   │   └── service.go            # JWT issuance + session management
+│   │   ├── cache/
+│   │   │   ├── history.go            # Redis List — search history per user
+│   │   │   ├── quota.go              # Redis String — daily quota per user
+│   │   │   ├── redis.go              # Redis client init
+│   │   │   └── session.go            # Redis String — backend JWT session
+│   │   ├── middleware/
+│   │   │   ├── auth.go               # JWT validation middleware
+│   │   │   ├── cors.go               # CORS middleware
+│   │   │   ├── logger.go             # Request logger
+│   │   │   └── ratelimit.go          # Rate limiter
+│   │   ├── news/
+│   │   │   ├── handler.go            # Scrape endpoint handler
+│   │   │   ├── routes.go             # News route registration
+│   │   │   └── service.go            # Cache lookup + scrape orchestration
+│   │   └── scraper/
+│   │       ├── decoder.go            # batchexecute URL decoder
+│   │       ├── limiter.go            # Concurrency limiter for OG fetches
+│   │       ├── parser.go             # RSS + OG metadata parser
+│   │       └── scraper.go            # Google News RSS entry point
 │   └── pkg/
-│       ├── hash/                     # SHA-256 cache key generator
-│       ├── response/                 # Unified JSON envelope
-│       └── types/                    # Shared ScrapeQuery, NewsItem types
+│       ├── hash/hash.go              # SHA-256 cache key generator
+│       ├── response/response.go      # Unified JSON envelope
+│       └── types/types.go            # Shared ScrapeQuery, NewsItem types
 ├── frontend/
 │   ├── app/
-│   │   ├── (auth)/                   # Login page
-│   │   ├── (main)/                   # Protected pages
-│   │   └── api/                      # Next.js API routes (proxy + AI)
+│   │   ├── (auth)/
+│   │   │   ├── layout.tsx            # Auth layout
+│   │   │   └── login/
+│   │   │       ├── OAuthButton.tsx   # OAuth button component
+│   │   │       └── page.tsx          # Login page
+│   │   ├── (main)/
+│   │   │   ├── layout.tsx            # Main layout with MainShell
+│   │   │   ├── page.tsx              # Home — prompt + client-side search
+│   │   │   └── news/page.tsx         # News — SSR search results
+│   │   └── api/
+│   │       ├── auth/
+│   │       │   ├── [...nextauth]/route.ts   # NextAuth handler
+│   │       │   └── set-session/route.ts     # Sets httpOnly session cookie
+│   │       ├── history/route.ts      # Proxy → Go /api/history
+│   │       ├── news/route.ts         # Proxy → Go /api/scrape
+│   │       ├── quota/route.ts        # Proxy → Go /api/quota
+│   │       ├── suggestions/route.ts  # Claude API suggestions (5 min TTL)
+│   │       └── translate/route.ts    # Claude API prompt → ScrapeQuery
 │   ├── components/
-│   │   ├── features/                 # NewsCard, NewsGrid, PromptSection
-│   │   ├── layout/                   # Navbar, Sidebar, Footer, MainShell
+│   │   ├── features/
+│   │   │   ├── news/                 # NewsCard, NewsGrid, Pagination, Skeletons, EmptyState
+│   │   │   └── prompt/               # PromptSection, PromptSuggestions
+│   │   ├── layout/                   # Navbar, Sidebar, Footer, MainShell, Providers
 │   │   └── ui/                       # Toast, Spinner, Cursor
-│   ├── context/                      # Toast, SearchHistory, Suggestions
-│   ├── hooks/                        # useSearchHistory, useAuth
-│   ├── lib/                          # api.ts, auth.ts, types.ts, validations.ts
+│   ├── context/                      # SearchHistoryContext, SuggestionsContext, ToastContext
+│   ├── hooks/                        # useAuth, useSearchHistory
+│   ├── lib/
+│   │   ├── api.ts                    # Fetch helpers (translate, news)
+│   │   ├── auth.ts                   # NextAuth config
+│   │   ├── constants.ts              # API_BASE_URL
+│   │   ├── types.ts                  # Shared TypeScript types
+│   │   ├── utils.ts                  # Utility functions
+│   │   └── validations.ts            # Zod schemas
 │   └── middleware.ts                 # Route protection (session cookie check)
 ├── docker-compose.yml
 ├── nginx.conf
