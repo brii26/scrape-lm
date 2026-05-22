@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { translatePrompt, fetchNewsClient } from "@/lib/api"
@@ -17,7 +17,7 @@ import type { NewsItem, ScrapeQuery } from "@/lib/types"
 
 type Status = "idle" | "scraping" | "done"
 
-export default function HomePage() {
+function HomePageInner() {
   const [status, setStatus] = useState<Status>("idle")
   const [items, setItems] = useState<NewsItem[]>([])
   const [total, setTotal] = useState(0)
@@ -196,5 +196,13 @@ export default function HomePage() {
 
       {status !== "idle" && <PromptSection floating onSearch={handleSearch} />}
     </SearchHistoryContext.Provider>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <HomePageInner />
+    </Suspense>
   )
 }

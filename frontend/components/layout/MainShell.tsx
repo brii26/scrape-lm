@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
 import { useSearchHistory } from "@/hooks/useSearchHistory"
@@ -14,7 +14,9 @@ export default function MainShell({ children, suggestions = [] }: { children: Re
   return (
     <SuggestionsProvider suggestions={suggestions}>
       <SearchHistoryContext.Provider value={{ addEntry, resetSearch: () => {}, activeTopic: null, searchFromHistory: () => {} }}>
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} history={history} />
+        <Suspense fallback={null}>
+          <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} history={history} />
+        </Suspense>
         <Navbar onBurgerClick={() => setSidebarOpen((prev) => !prev)} />
         <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8">{children}</main>
       </SearchHistoryContext.Provider>
