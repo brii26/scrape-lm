@@ -30,7 +30,7 @@
 
 ## About
 
-scrape-lm is an AI-powered news aggregator that accepts natural language prompts, translates them into structured search queries using the Claude API, and scrapes Google News RSS in real time. Results are cached in Redis for 4 hours, and each authenticated user gets a personalized quota, search history, and AI-curated prompt suggestions.
+scrape-lm is an AI-powered news aggregator that accepts natural language prompts, translates them into structured search queries using the Claude API, and scrapes Google News RSS in real time. Results are cached in Redis, and each authenticated user gets a personalized quota, search history, and AI-curated prompt suggestions.
 
 ---
 
@@ -43,13 +43,13 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
   Fetches live articles from Google News RSS and decodes obfuscated article URLs using Google's batchexecute API. Each article is enriched with OG metadata including title, description, and cover image.
 
 - **Redis Caching**
-  Scraped results are cached for 4 hours using a SHA-256 key derived from the topic. Subsequent queries for the same topic are served instantly from cache without hitting the scraper.
+  Scraped results are cached for 15 minutes using a SHA-256 key derived from the topic. Subsequent queries for the same topic are served instantly from cache without hitting the scraper.
 
 - **Per-Account Daily Quota**
-  Each authenticated user gets 10 searches per day, tracked atomically in Redis with a 4-hour TTL. Cache hits do not count against the quota.
+  Each authenticated user gets 10 searches per day, tracked atomically in Redis and reset at midnight UTC. Cache hits do not count against the quota.
 
 - **Search History**
-  The last 20 searches per account are stored in a Redis List, persisted for 4 hours, and surfaced in the sidebar for one-click re-run.
+  The last 20 searches per account are stored in a Redis List, reset at midnight UTC, and surfaced in the sidebar for one-click re-run.
 
 - **AI Prompt Suggestions**
   The home screen surfaces 4 AI-curated search suggestions derived from live Google News headlines, refreshed every 5 minutes via an in-memory TTL store on the Next.js server.
@@ -86,9 +86,9 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
 
 | Key Pattern | Type | TTL | Purpose |
 |:---|:---|:---|:---|
-| `<sha256(topic)>` | String (JSON) | 4 h | Cached news results |
-| `quota:<userID>` | String (int) | 4 h | Daily search count per user |
-| `history:<userID>` | List | 4 h | Last 20 searches per user |
+| `<sha256(topic)>` | String (JSON) | 15 min | Cached news results |
+| `quota:<userID>` | String (int) | until midnight UTC | Daily search count per user |
+| `history:<userID>` | List | until midnight UTC | Last 20 searches per user |
 | `session:<userID>` | String | 24 h | Backend JWT token |
 
 ---
@@ -185,10 +185,10 @@ scrape-lm/
 │   │   │   ├── routes.go             # Auth route registration
 │   │   │   └── service.go            # JWT issuance + session management
 │   │   ├── cache/
-│   │   │   ├── history.go            # Redis List — search history per user
-│   │   │   ├── quota.go              # Redis String — daily quota per user
+│   │   │   ├── history.go            # Redis List - search history per user
+│   │   │   ├── quota.go              # Redis String - daily quota per user
 │   │   │   ├── redis.go              # Redis client init
-│   │   │   └── session.go            # Redis String — backend JWT session
+│   │   │   └── session.go            # Redis String - backend JWT session
 │   │   ├── middleware/
 │   │   │   ├── auth.go               # JWT validation middleware
 │   │   │   ├── cors.go               # CORS middleware
@@ -216,17 +216,17 @@ scrape-lm/
 │   │   │       └── page.tsx          # Login page
 │   │   ├── (main)/
 │   │   │   ├── layout.tsx            # Main layout with MainShell
-│   │   │   ├── page.tsx              # Home — prompt + client-side search
-│   │   │   └── news/page.tsx         # News — SSR search results
+│   │   │   ├── page.tsx              # Home - prompt + client-side search
+│   │   │   └── news/page.tsx         # News - SSR search results
 │   │   └── api/
 │   │       ├── auth/
 │   │       │   ├── [...nextauth]/route.ts   # NextAuth handler
 │   │       │   └── set-session/route.ts     # Sets httpOnly session cookie
-│   │       ├── history/route.ts      # Proxy → Go /api/history
-│   │       ├── news/route.ts         # Proxy → Go /api/scrape
-│   │       ├── quota/route.ts        # Proxy → Go /api/quota
+│   │       ├── history/route.ts      # Proxy -> Go /api/history
+│   │       ├── news/route.ts         # Proxy -> Go /api/scrape
+│   │       ├── quota/route.ts        # Proxy -> Go /api/quota
 │   │       ├── suggestions/route.ts  # Claude API suggestions (5 min TTL)
-│   │       └── translate/route.ts    # Claude API prompt → ScrapeQuery
+│   │       └── translate/route.ts    # Claude API prompt -> ScrapeQuery
 │   ├── components/
 │   │   ├── features/
 │   │   │   ├── news/                 # NewsCard, NewsGrid, Pagination, Skeletons, EmptyState
