@@ -1,0 +1,21 @@
+# env files
+.env
+.env.development
+.env.example
+
+# dev tooling
+.air.toml
+Makefile
+tmp/
+
+# build output
+server
+
+# editor & OS
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+
+# docs
+*.md

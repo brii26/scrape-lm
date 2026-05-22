@@ -1,0 +1,29 @@
+node_modules/
+.next/
+
+# env files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production.local
+.env.example
+
+# editor & OS
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+
+# build artifacts
+tsconfig.tsbuildinfo
+
+# docs / config not needed in image
+*.md
+.prettierrc
+eslint.config.mjs
+components.json
+AGENTS.md
+CLAUDE.md
