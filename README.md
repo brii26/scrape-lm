@@ -139,6 +139,7 @@ ALLOWED_ORIGIN=https://yourdomain.com
 ```env
 AUTH_SECRET=your_auth_secret
 NEXTAUTH_URL=https://yourdomain.com
+AUTH_TRUST_HOST=true
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GITHUB_CLIENT_ID=your_github_client_id
@@ -150,10 +151,10 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 ### Run with Docker Compose
 
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
 
-The app will be available at `http://localhost` via Nginx on port 80.
+The app will be available at `https://yourdomain.com` via Nginx.
 
 ### Run locally (development)
 
