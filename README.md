@@ -82,6 +82,10 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
   <img src="docs/architecture.png" width="720" />
 </div>
 
+<div align="center">
+  <a href="https://excalidraw.com/#json=_7IjoCMKLZjibUD280z8Y,5L2R82ztcSlp34bFwzFzAw">View interactive diagram on Excalidraw</a>
+</div>
+
 ### Redis Key Schema
 
 | Key Pattern | Type | TTL | Purpose |
