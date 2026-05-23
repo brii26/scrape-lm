@@ -58,7 +58,7 @@ scrape-lm is an AI-powered news aggregator that accepts natural language prompts
   Authentication is handled by NextAuth with Google and GitHub OAuth. On login, the backend issues a signed JWT stored as an httpOnly session cookie, validated by the Go auth middleware on every protected request.
 
 - **Paginated News Feed**
-  Results are paginated at 6 cards per page, up to 5 pages (30 articles max). Filters are applied in memory after cache retrieval, so pagination never triggers a re-scrape.
+  Results are paginated at 6 cards per page, up to 20 articles max. Filters are applied in memory after cache retrieval, so pagination never triggers a re-scrape.
 
 ---
 

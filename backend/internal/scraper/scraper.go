@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	maxFetch   = 20
-	maxResults = 30
+	maxFetch   = 30
+	maxResults = 20
 	perPage    = 6
 )
 
